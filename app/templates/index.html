@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Chizza Guild Wrapped{% endblock %}
+
+{% block content %}
+<div class="landing-page">
+    <div class="landing-content">
+        <h1 class="landing-title">Chizza Guild</h1>
+        <h2 class="landing-subtitle">Wrapped</h2>
+
+        <p class="landing-description">
+            Your year in review
+        </p>
+
+        <div class="year-selector">
+            <a href="/wrapped/{{ current_year }}" class="year-button">
+                {{ current_year }} Wrapped
+            </a>
+        </div>
+
+        <p class="landing-footer">
+            Click above to view your guild's year in review
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{{ year }} Wrapped - Chizza Guild{% endblock %}
+
+{% block content %}
+<div class="wrapped-container" id="wrapped-container">
+    <!-- Progress indicator -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Navigation hint -->
+    <div class="nav-hint">
+        <span class="nav-arrow">←</span>
+        <span class="nav-text">Use arrow keys or swipe</span>
+        <span class="nav-arrow">→</span>
+    </div>
+
+    <!-- Story pages -->
+    <div class="story-wrapper" id="story-wrapper">
+
+        <!-- Page 1: Welcome -->
+        <div class="story-page active" data-page="1">
+            <div class="story-content">
+                <h1 class="story-title animate-in">{{ summary.guild_name }}</h1>
+                <h2 class="story-subtitle animate-in delay-1">{{ year }} Wrapped</h2>
+                <p class="story-text animate-in delay-2">Your year in review</p>
+            </div>
+        </div>
+
+        <!-- Page 2: Most Active Members -->
+        <div class="story-page" data-page="2">
+            <div class="story-content">
+                <h2 class="story-heading">Most Active</h2>
+                <p class="story-subheading">Top Guild XP Earners</p>
+                <div class="leaderboard">
+                    {% for member in summary.top_xp_earners[:5] %}
+                    <div class="leaderboard-item">
+                        <span class="rank">#{{ loop.index }}</span>
+                        <span class="name">{{ member.username }}</span>
+                        <span class="stat">{{ "{:,}".format(member.guild_xp) }} XP</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: Top Messengers -->
+        <div class="story-page" data-page="3">
+            <div class="story-content">
+                <h2 class="story-heading">Chattiest Members</h2>
+                <p class="story-subheading">Most Messages Sent</p>
+                <div class="leaderboard">
+                    {% for member in summary.top_messengers[:5] %}
+                    <div class="leaderboard-item">
+                        <span class="rank">#{{ loop.index }}</span>
+                        <span class="name">{{ member.username }}</span>
+                        <span class="stat">{{ "{:,}".format(member.discord_messages) }} messages</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 4: New Members -->
+        <div class="story-page" data-page="4">
+            <div class="story-content">
+                <h2 class="story-heading">Fresh Faces</h2>
+                <p class="story-subheading">{{ summary.new_members_count }} members joined in {{ year }}</p>
+                <div class="member-grid">
+                    {% for member in summary.new_members[:9] %}
+                    <div class="member-card">
+                        {{ member.username }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 5: Most Pinged -->
+        <div class="story-page" data-page="5">
+            <div class="story-content">
+                <h2 class="story-heading">Most Popular</h2>
+                <p class="story-subheading">Most Mentioned Members</p>
+                <div class="leaderboard">
+                    {% for member in summary.most_pinged[:5] %}
+                    <div class="leaderboard-item">
+                        <span class="rank">#{{ loop.index }}</span>
+                        <span class="name">{{ member.username }}</span>
+                        <span class="stat">{{ "{:,}".format(member.times_pinged) }} pings</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 6: Fun Facts -->
+        <div class="story-page" data-page="6">
+            <div class="story-content">
+                <h2 class="story-heading">By The Numbers</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value count-up" data-target="{{ summary.total_members }}">0</div>
+                        <div class="stat-label">Total Members</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value count-up" data-target="{{ summary.total_guild_xp }}">0</div>
+                        <div class="stat-label">Total Guild XP</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value count-up" data-target="{{ summary.total_messages }}">0</div>
+                        <div class="stat-label">Messages Sent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value count-up" data-target="{{ summary.new_members_count }}">0</div>
+                        <div class="stat-label">New Members</div>
+                    </div>
+                </div>
+                {% if summary.most_active_day %}
+                <p class="fun-fact">Most active day: {{ summary.most_active_day }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Page 7: Thank You -->
+        <div class="story-page" data-page="7">
+            <div class="story-content">
+                <h1 class="story-title animate-in">Thank You</h1>
+                <p class="story-text animate-in delay-1">For an amazing {{ year }}</p>
+                <p class="story-text animate-in delay-2">See you next year!</p>
+                <a href="/" class="back-button animate-in delay-3">← Back to Home</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation buttons -->
+    <button class="nav-button nav-prev" id="nav-prev" aria-label="Previous page">
+        <span>←</span>
+    </button>
+    <button class="nav-button nav-next" id="nav-next" aria-label="Next page">
+        <span>→</span>
+    </button>
+</div>
+
+<script>
+    // Initialize wrapped with total pages
+    if (typeof initializeWrapped === 'function') {
+        initializeWrapped(7);
+    }
+</script>
+{% endblock %}

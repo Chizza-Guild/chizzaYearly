@@ -107,13 +107,14 @@ class HypixelService:
                 MemberXPStats(
                     uuid=member.uuid,
                     total_xp=total_xp,
+                    quest_participation=member.quest_participation,
                     joined_timestamp=member.joined,
                     joined_this_year=joined_this_year,
                 )
             )
 
-        # Sort by total XP descending
-        member_stats.sort(key=lambda x: x.total_xp, reverse=True)
+        # Sort by quest participation descending (more meaningful than 7-day XP)
+        member_stats.sort(key=lambda x: x.quest_participation, reverse=True)
 
         return member_stats
 

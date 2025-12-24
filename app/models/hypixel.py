@@ -46,5 +46,6 @@ class MemberXPStats(BaseModel):
     uuid: str
     username: str = "Unknown"
     total_xp: int = 0
+    quest_participation: int = 0
     joined_timestamp: int
     joined_this_year: bool = False

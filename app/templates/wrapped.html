@@ -28,17 +28,17 @@
             </div>
         </div>
 
-        <!-- Page 2: Most Active Members -->
+        <!-- Page 2: Quest Champions -->
         <div class="story-page" data-page="2">
             <div class="story-content">
-                <h2 class="story-heading">Most Active</h2>
-                <p class="story-subheading">Top Guild XP Earners</p>
+                <h2 class="story-heading">Quest Champions</h2>
+                <p class="story-subheading">Most Guild Quests Completed</p>
                 <div class="leaderboard">
                     {% for member in summary.top_xp_earners[:5] %}
                     <div class="leaderboard-item">
                         <span class="rank">#{{ loop.index }}</span>
                         <span class="name">{{ member.username }}</span>
-                        <span class="stat">{{ "{:,}".format(member.guild_xp) }} XP</span>
+                        <span class="stat">{{ "{:,}".format(member.quest_participation) }} quests</span>
                     </div>
                     {% endfor %}
                 </div>

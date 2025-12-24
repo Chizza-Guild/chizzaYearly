@@ -53,6 +53,7 @@ class AnalyticsService:
                     uuid=hypixel_member.uuid,
                     username=hypixel_member.username,
                     guild_xp=hypixel_member.total_xp,
+                    quest_participation=hypixel_member.quest_participation,
                     joined_this_year=hypixel_member.joined_this_year,
                     joined_timestamp=hypixel_member.joined_timestamp,
                     joined_date=joined_date,
@@ -76,7 +77,8 @@ class AnalyticsService:
             )
 
         # Get top lists
-        top_xp = sorted(combined_members, key=lambda x: x.guild_xp, reverse=True)[:10]
+        # Sort by quest participation (top_xp is kept for template compatibility)
+        top_xp = sorted(combined_members, key=lambda x: x.quest_participation, reverse=True)[:10]
         top_msg = sorted(discord_members, key=lambda x: x.discord_messages, reverse=True)[:10]
         new_members = sorted(
             [m for m in combined_members if m.joined_this_year],
@@ -194,14 +196,15 @@ class AnalyticsService:
             cursor.execute(
                 """
                 INSERT INTO member_stats
-                (snapshot_id, member_uuid, member_name, guild_xp, joined_this_year, joined_date)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (snapshot_id, member_uuid, member_name, guild_xp, quest_participation, joined_this_year, joined_date)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     snapshot_id,
                     member.uuid,
                     member.username,
                     member.guild_xp,
+                    member.quest_participation,
                     member.joined_this_year,
                     member.joined_date,
                 ),
@@ -215,14 +218,15 @@ class AnalyticsService:
             cursor.execute(
                 """
                 INSERT INTO member_stats
-                (snapshot_id, member_uuid, member_name, guild_xp, joined_this_year, joined_date)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (snapshot_id, member_uuid, member_name, guild_xp, quest_participation, joined_this_year, joined_date)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     snapshot_id,
                     member.uuid,
                     member.username,
                     member.guild_xp,
+                    member.quest_participation,
                     member.joined_this_year,
                     member.joined_date,
                 ),
@@ -313,6 +317,7 @@ class AnalyticsService:
                 uuid=m["member_uuid"] or "",
                 username=m["member_name"],
                 guild_xp=m["guild_xp"] or 0,
+                quest_participation=m["quest_participation"] or 0,
                 discord_messages=m["discord_messages"] or 0,
                 times_pinged=m["times_pinged"] or 0,
                 joined_this_year=bool(m["joined_this_year"]),
@@ -322,7 +327,9 @@ class AnalyticsService:
         ]
 
         # Separate into categories
-        top_xp = [m for m in all_members if m.guild_xp > 0][:10]
+        # Sort by quest participation (top_xp is kept for template compatibility)
+        top_xp = sorted(all_members, key=lambda x: x.quest_participation, reverse=True)[:10]
+        top_xp = [m for m in top_xp if m.quest_participation > 0]
         top_msg = sorted(all_members, key=lambda x: x.discord_messages, reverse=True)[:10]
         new_members = sorted(
             [m for m in all_members if m.joined_this_year],

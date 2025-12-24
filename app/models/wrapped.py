@@ -12,6 +12,7 @@ class MemberWrappedStats(BaseModel):
     uuid: str
     username: str
     guild_xp: int = 0
+    quest_participation: int = 0
     discord_messages: int = 0
     times_pinged: int = 0
     joined_this_year: bool = False

@@ -36,6 +36,7 @@ def init_database(db_path: str = "data/wrapped.db"):
             member_uuid TEXT,
             member_name TEXT,
             guild_xp INTEGER DEFAULT 0,
+            quest_participation INTEGER DEFAULT 0,
             discord_messages INTEGER DEFAULT 0,
             times_pinged INTEGER DEFAULT 0,
             joined_this_year BOOLEAN DEFAULT 0,

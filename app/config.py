@@ -4,7 +4,7 @@ Loads settings from environment variables.
 """
 
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
@@ -14,10 +14,10 @@ class Settings(BaseSettings):
     hypixel_api_key: str
     hypixel_guild_id: str
 
-    # Discord API
-    discord_bot_token: str
-    discord_guild_id: str
-    discord_channel_ids: str  # Comma-separated string
+    # Discord API (optional - leave blank to disable Discord integration)
+    discord_bot_token: Optional[str] = None
+    discord_guild_id: Optional[str] = None
+    discord_channel_ids: Optional[str] = None  # Comma-separated string
 
     # Application
     year: int = 2025
@@ -37,7 +37,14 @@ class Settings(BaseSettings):
     @property
     def channel_ids_list(self) -> List[int]:
         """Parse comma-separated channel IDs into a list of integers."""
+        if not self.discord_channel_ids:
+            return []
         return [int(cid.strip()) for cid in self.discord_channel_ids.split(",")]
+
+    @property
+    def discord_enabled(self) -> bool:
+        """Check if Discord integration is enabled."""
+        return bool(self.discord_bot_token and self.discord_guild_id and self.discord_channel_ids)
 
 
 # Create a global settings instance

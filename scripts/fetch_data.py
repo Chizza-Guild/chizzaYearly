@@ -29,8 +29,13 @@ async def fetch_all_data():
 
     # Initialize services
     hypixel_service = HypixelService()
-    discord_service = DiscordService()
     analytics_service = AnalyticsService()
+
+    # Only initialize Discord service if enabled
+    if settings.discord_enabled:
+        discord_service = DiscordService()
+    else:
+        discord_service = None
 
     try:
         # Step 1: Fetch Hypixel guild data
@@ -72,33 +77,44 @@ async def fetch_all_data():
         print(f"✅ Usernames fetched")
         print()
 
-        # Step 4: Fetch Discord messages
-        print("💬 Step 4/5: Fetching Discord messages...")
-        print(f"   Channels: {len(settings.channel_ids_list)}")
-        print(f"   Date range: {settings.start_date} to {settings.end_date}")
-        print(f"   ⚠️  This may take 10-30 minutes depending on server activity!")
-        print()
+        # Step 4: Fetch Discord messages (if enabled)
+        if settings.discord_enabled:
+            print("💬 Step 4/5: Fetching Discord messages...")
+            print(f"   Channels: {len(settings.channel_ids_list)}")
+            print(f"   Date range: {settings.start_date} to {settings.end_date}")
+            print(f"   ⚠️  This may take 10-30 minutes depending on server activity!")
+            print()
 
-        messages = await discord_service.fetch_all_messages(
-            settings.start_date,
-            settings.end_date,
-            cache=True
-        )
+            messages = await discord_service.fetch_all_messages(
+                settings.start_date,
+                settings.end_date,
+                cache=True
+            )
 
-        print()
-        print(f"✅ Discord messages fetched: {len(messages):,}")
-        print()
+            print()
+            print(f"✅ Discord messages fetched: {len(messages):,}")
+            print()
 
-        # Step 5: Calculate Discord statistics
-        print("📊 Step 5/5: Calculating Discord statistics...")
+            # Step 5: Calculate Discord statistics
+            print("📊 Step 5/5: Calculating Discord statistics...")
 
-        discord_stats = discord_service.calculate_stats(messages)
+            discord_stats = discord_service.calculate_stats(messages)
 
-        print(f"✅ Discord statistics calculated")
-        print(f"   Total messages: {discord_stats.total_messages:,}")
-        print(f"   Unique users: {len(discord_stats.user_stats)}")
-        print(f"   Most active day: {discord_stats.most_active_day}")
-        print()
+            print(f"✅ Discord statistics calculated")
+            print(f"   Total messages: {discord_stats.total_messages:,}")
+            print(f"   Unique users: {len(discord_stats.user_stats)}")
+            print(f"   Most active day: {discord_stats.most_active_day}")
+            print()
+        else:
+            print("⚠️  Step 4/5: Discord integration disabled (no bot token configured)")
+            print("   Skipping Discord data collection...")
+            print()
+
+            # Create empty Discord stats
+            from app.models.discord import DiscordStats
+            discord_stats = DiscordStats()
+            print("✅ Using empty Discord stats")
+            print()
 
         # Step 6: Combine and save
         print("💾 Combining data and saving to database...")
@@ -121,7 +137,8 @@ async def fetch_all_data():
         print(f"  Year: {summary.year}")
         print(f"  Total members: {summary.total_members}")
         print(f"  Total XP: {summary.total_guild_xp:,}")
-        print(f"  Total messages: {summary.total_messages:,}")
+        if settings.discord_enabled:
+            print(f"  Total messages: {summary.total_messages:,}")
         print(f"  New members: {summary.new_members_count}")
         print()
         print(f"View your wrapped at: http://localhost:8000/wrapped/{settings.year}")

@@ -45,7 +45,8 @@
             </div>
         </div>
 
-        <!-- Page 3: Top Messengers -->
+        <!-- Page 3: Top Messengers (only if Discord data available) -->
+        {% if summary.total_messages > 0 %}
         <div class="story-page" data-page="3">
             <div class="story-content">
                 <h2 class="story-heading">Chattiest Members</h2>
@@ -61,6 +62,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <!-- Page 4: New Members -->
         <div class="story-page" data-page="4">
@@ -77,7 +79,8 @@
             </div>
         </div>
 
-        <!-- Page 5: Most Pinged -->
+        <!-- Page 5: Most Pinged (only if Discord data available) -->
+        {% if summary.total_messages > 0 %}
         <div class="story-page" data-page="5">
             <div class="story-content">
                 <h2 class="story-heading">Most Popular</h2>
@@ -93,6 +96,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <!-- Page 6: Fun Facts -->
         <div class="story-page" data-page="6">
@@ -107,10 +111,12 @@
                         <div class="stat-value count-up" data-target="{{ summary.total_guild_xp }}">0</div>
                         <div class="stat-label">Total Guild XP</div>
                     </div>
+                    {% if summary.total_messages > 0 %}
                     <div class="stat-card">
                         <div class="stat-value count-up" data-target="{{ summary.total_messages }}">0</div>
                         <div class="stat-label">Messages Sent</div>
                     </div>
+                    {% endif %}
                     <div class="stat-card">
                         <div class="stat-value count-up" data-target="{{ summary.new_members_count }}">0</div>
                         <div class="stat-label">New Members</div>

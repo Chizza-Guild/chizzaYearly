@@ -4,12 +4,13 @@ A year-end "Wrapped" web application for your Hypixel guild, inspired by Spotify
 
 ## Features
 
-- **Most Active Members** - Top guild members by XP earned
-- **Top Messengers** - Members who sent the most Discord messages
-- **New Members** - Members who joined this year
-- **Most Pinged** - Most mentioned members in Discord
+- **Most Active Members** - Top guild members by XP earned (Hypixel)
+- **New Members** - Members who joined this year (Hypixel)
+- **Top Messengers** - Members who sent the most Discord messages *(optional - requires Discord bot)*
+- **Most Pinged** - Most mentioned members in Discord *(optional - requires Discord bot)*
 - **Beautiful UI** - Spotify Wrapped-inspired design with smooth animations
 - **Mobile Responsive** - Works great on all devices
+- **Flexible** - Works with just Hypixel data, or add Discord for more stats
 
 ## Tech Stack
 
@@ -22,7 +23,7 @@ A year-end "Wrapped" web application for your Hypixel guild, inspired by Spotify
 
 - Python 3.8 or higher
 - Hypixel API key (get by running `/api new` in-game)
-- Discord bot token (create at [Discord Developer Portal](https://discord.com/developers/applications))
+- *(Optional)* Discord bot token - only needed for Discord stats
 
 ## Installation
 
@@ -51,7 +52,21 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Set Up Configuration
+### 4. Choose Your Mode
+
+The app supports two modes:
+
+**🎮 Hypixel-Only Mode** (Quick Start)
+- Only requires Hypixel API key
+- Shows: Most Active Members, New Members, Total XP
+- Perfect if you don't have a Discord server or want to get started quickly
+
+**💬 Full Mode with Discord**
+- Requires both Hypixel and Discord bot setup
+- Shows everything: Guild stats + Discord message stats + mentions
+- More comprehensive wrapped experience
+
+### 5. Set Up Configuration
 
 Copy `.env.example` to `.env` and fill in your API credentials:
 
@@ -61,15 +76,16 @@ cp .env.example .env
 
 Edit `.env` and add your credentials:
 
+**For Hypixel-Only Mode:**
 ```env
-# Hypixel API
+# Hypixel API (REQUIRED)
 HYPIXEL_API_KEY=your-hypixel-api-key
 HYPIXEL_GUILD_ID=your-guild-id
 
-# Discord API
-DISCORD_BOT_TOKEN=your-bot-token
-DISCORD_GUILD_ID=your-discord-server-id
-DISCORD_CHANNEL_IDS=channel1-id,channel2-id
+# Discord API (leave commented out for Hypixel-only mode)
+# DISCORD_BOT_TOKEN=
+# DISCORD_GUILD_ID=
+# DISCORD_CHANNEL_IDS=
 
 # Application
 YEAR=2025
@@ -78,6 +94,14 @@ END_DATE=2025-12-31
 
 # Security
 ADMIN_PASSWORD=your-secure-password
+```
+
+**For Full Mode with Discord:**
+Uncomment and fill in the Discord settings:
+```env
+DISCORD_BOT_TOKEN=your-bot-token
+DISCORD_GUILD_ID=your-discord-server-id
+DISCORD_CHANNEL_IDS=channel1-id,channel2-id
 ```
 
 #### Getting Your Credentials
@@ -91,7 +115,7 @@ ADMIN_PASSWORD=your-secure-password
 1. Visit: `https://api.hypixel.net/guild?key=YOUR_API_KEY&name=YOUR_GUILD_NAME`
 2. Copy the `_id` field from the response
 
-**Discord Bot:**
+**Discord Bot** *(Optional - skip this if using Hypixel-only mode)*:
 1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
 2. Click "New Application"
 3. Go to "Bot" section and click "Add Bot"
@@ -105,12 +129,12 @@ ADMIN_PASSWORD=your-secure-password
 8. Select permissions: `Read Message History`, `View Channels`
 9. Use the generated URL to add the bot to your Discord server
 
-**Discord Guild/Channel IDs:**
+**Discord Guild/Channel IDs** *(Optional)*:
 1. Enable Developer Mode in Discord (User Settings → Advanced → Developer Mode)
 2. Right-click your server → "Copy Server ID"
 3. Right-click channels → "Copy Channel ID"
 
-### 5. Initialize Database
+### 6. Initialize Database
 
 ```bash
 python scripts/init_db.py

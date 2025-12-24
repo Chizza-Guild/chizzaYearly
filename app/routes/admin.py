@@ -12,8 +12,8 @@ from app.services.analytics_service import AnalyticsService
 router = APIRouter(prefix="/admin")
 security = HTTPBasic()
 
+# Initialize services that don't require Discord
 hypixel_service = HypixelService()
-discord_service = DiscordService()
 analytics_service = AnalyticsService()
 
 
@@ -53,15 +53,22 @@ async def refresh_data(authorized: bool = Depends(verify_password)):
         print("Fetching player usernames...")
         xp_stats = await hypixel_service.enrich_members_with_usernames(xp_stats)
 
-        # Fetch Discord data
-        print("Fetching Discord messages (this may take a while)...")
-        messages = await discord_service.fetch_all_messages(
-            settings.start_date, settings.end_date
-        )
+        # Fetch Discord data (if enabled)
+        if settings.discord_enabled:
+            print("Fetching Discord messages (this may take a while)...")
+            # Initialize Discord service only when needed
+            discord_service = DiscordService()
+            messages = await discord_service.fetch_all_messages(
+                settings.start_date, settings.end_date
+            )
 
-        # Calculate Discord stats
-        print("Calculating Discord statistics...")
-        discord_stats = discord_service.calculate_stats(messages)
+            # Calculate Discord stats
+            print("Calculating Discord statistics...")
+            discord_stats = discord_service.calculate_stats(messages)
+        else:
+            print("Discord integration disabled, using empty stats...")
+            from app.models.discord import DiscordStats
+            discord_stats = DiscordStats()
 
         # Combine and save
         print("Combining statistics...")

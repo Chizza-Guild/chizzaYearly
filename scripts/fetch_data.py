@@ -122,7 +122,8 @@ async def fetch_all_data():
         summary = analytics_service.combine_stats(
             xp_stats,
             discord_stats,
-            guild_response.guild.name
+            guild_response.guild.name,
+            guild_response.guild.exp
         )
 
         analytics_service.save_to_database(summary)

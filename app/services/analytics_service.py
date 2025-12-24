@@ -23,6 +23,7 @@ class AnalyticsService:
         hypixel_stats: List[MemberXPStats],
         discord_stats: DiscordStats,
         guild_name: str = "Chizza Guild",
+        total_guild_xp: int = 0,
     ) -> WrappedSummary:
         """
         Combine Hypixel and Discord statistics into a wrapped summary.
@@ -86,7 +87,8 @@ class AnalyticsService:
         most_pinged = [m for m in most_pinged if m.times_pinged > 0]
 
         # Calculate aggregate stats
-        total_xp = sum(m.guild_xp for m in combined_members)
+        # Use the guild's total XP if provided, otherwise sum member contributions
+        total_xp = total_guild_xp if total_guild_xp > 0 else sum(m.guild_xp for m in combined_members)
         total_members = len(combined_members)
         new_members_count = len(new_members)
 

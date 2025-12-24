@@ -73,7 +73,7 @@ async def refresh_data(authorized: bool = Depends(verify_password)):
         # Combine and save
         print("Combining statistics...")
         summary = analytics_service.combine_stats(
-            xp_stats, discord_stats, guild_response.guild.name
+            xp_stats, discord_stats, guild_response.guild.name, guild_response.guild.exp
         )
 
         print("Saving to database...")

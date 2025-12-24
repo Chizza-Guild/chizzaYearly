@@ -72,7 +72,8 @@
                 <div class="member-grid">
                     {% for member in summary.new_members[:9] %}
                     <div class="member-card">
-                        {{ member.username }}
+                        <div class="member-name">{{ member.username }}</div>
+                        <div class="member-joined">Joined {{ member.joined_date }}</div>
                     </div>
                     {% endfor %}
                 </div>

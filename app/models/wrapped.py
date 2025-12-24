@@ -15,6 +15,8 @@ class MemberWrappedStats(BaseModel):
     discord_messages: int = 0
     times_pinged: int = 0
     joined_this_year: bool = False
+    joined_timestamp: int = 0  # Unix timestamp in milliseconds
+    joined_date: str = ""  # Human-readable date (YYYY-MM-DD)
 
 
 class WrappedSummary(BaseModel):

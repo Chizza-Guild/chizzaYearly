@@ -39,6 +39,7 @@ def init_database(db_path: str = "data/wrapped.db"):
             discord_messages INTEGER DEFAULT 0,
             times_pinged INTEGER DEFAULT 0,
             joined_this_year BOOLEAN DEFAULT 0,
+            joined_date TEXT,
             FOREIGN KEY (snapshot_id) REFERENCES wrapped_snapshots(id)
         )
     """)

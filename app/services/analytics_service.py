@@ -5,6 +5,7 @@ Generates wrapped statistics and stores them in the database.
 
 import sqlite3
 from typing import List, Dict
+from datetime import datetime
 from app.config import settings
 from app.models.hypixel import MemberXPStats
 from app.models.discord import DiscordStats, UserMessageStats
@@ -43,12 +44,17 @@ class AnalyticsService:
         combined_members = []
 
         for hypixel_member in hypixel_stats:
+            # Convert timestamp to readable date
+            joined_date = datetime.fromtimestamp(hypixel_member.joined_timestamp / 1000).strftime("%Y-%m-%d")
+
             combined_members.append(
                 MemberWrappedStats(
                     uuid=hypixel_member.uuid,
                     username=hypixel_member.username,
                     guild_xp=hypixel_member.total_xp,
                     joined_this_year=hypixel_member.joined_this_year,
+                    joined_timestamp=hypixel_member.joined_timestamp,
+                    joined_date=joined_date,
                     discord_messages=0,  # We can't link Discord to Hypixel easily
                     times_pinged=0,
                 )
@@ -71,7 +77,11 @@ class AnalyticsService:
         # Get top lists
         top_xp = sorted(combined_members, key=lambda x: x.guild_xp, reverse=True)[:10]
         top_msg = sorted(discord_members, key=lambda x: x.discord_messages, reverse=True)[:10]
-        new_members = [m for m in combined_members if m.joined_this_year]
+        new_members = sorted(
+            [m for m in combined_members if m.joined_this_year],
+            key=lambda x: x.joined_timestamp,
+            reverse=True  # Most recent first
+        )
         most_pinged = sorted(discord_members, key=lambda x: x.times_pinged, reverse=True)[:10]
         most_pinged = [m for m in most_pinged if m.times_pinged > 0]
 
@@ -177,13 +187,13 @@ class AnalyticsService:
         # Delete existing member stats for this snapshot
         cursor.execute("DELETE FROM member_stats WHERE snapshot_id = ?", (snapshot_id,))
 
-        # Insert member stats (Hypixel data)
+        # Insert member stats (Hypixel data - top XP earners)
         for member in summary.top_xp_earners:
             cursor.execute(
                 """
                 INSERT INTO member_stats
-                (snapshot_id, member_uuid, member_name, guild_xp, joined_this_year)
-                VALUES (?, ?, ?, ?, ?)
+                (snapshot_id, member_uuid, member_name, guild_xp, joined_this_year, joined_date)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 (
                     snapshot_id,
@@ -191,6 +201,28 @@ class AnalyticsService:
                     member.username,
                     member.guild_xp,
                     member.joined_this_year,
+                    member.joined_date,
+                ),
+            )
+
+        # Insert new members (with join dates)
+        for member in summary.new_members:
+            # Skip if already inserted (in top XP earners)
+            if member in summary.top_xp_earners:
+                continue
+            cursor.execute(
+                """
+                INSERT INTO member_stats
+                (snapshot_id, member_uuid, member_name, guild_xp, joined_this_year, joined_date)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    snapshot_id,
+                    member.uuid,
+                    member.username,
+                    member.guild_xp,
+                    member.joined_this_year,
+                    member.joined_date,
                 ),
             )
 
@@ -282,6 +314,7 @@ class AnalyticsService:
                 discord_messages=m["discord_messages"] or 0,
                 times_pinged=m["times_pinged"] or 0,
                 joined_this_year=bool(m["joined_this_year"]),
+                joined_date=m["joined_date"] or "",
             )
             for m in members
         ]
@@ -289,7 +322,11 @@ class AnalyticsService:
         # Separate into categories
         top_xp = [m for m in all_members if m.guild_xp > 0][:10]
         top_msg = sorted(all_members, key=lambda x: x.discord_messages, reverse=True)[:10]
-        new_members = [m for m in all_members if m.joined_this_year]
+        new_members = sorted(
+            [m for m in all_members if m.joined_this_year],
+            key=lambda x: x.joined_date,
+            reverse=True  # Most recent first
+        )
         most_pinged = sorted(all_members, key=lambda x: x.times_pinged, reverse=True)[:10]
         most_pinged = [m for m in most_pinged if m.times_pinged > 0]
 

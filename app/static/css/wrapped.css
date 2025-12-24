@@ -297,6 +297,18 @@ body {
     backdrop-filter: blur(10px);
 }
 
+.member-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.member-joined {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    font-weight: 400;
+}
+
 /* Stats Grid */
 .stats-grid {
     display: grid;

@@ -8,8 +8,9 @@ from typing import List, Dict
 from datetime import datetime
 from app.config import settings
 from app.models.hypixel import MemberXPStats
-from app.models.discord import DiscordStats, UserMessageStats
+from app.models.discord import DiscordStats, UserMessageStats, DiscordMessage
 from app.models.wrapped import MemberWrappedStats, WrappedSummary
+from app.services.wordle_service import WordleService
 
 
 class AnalyticsService:
@@ -17,6 +18,7 @@ class AnalyticsService:
 
     def __init__(self, db_path: str = None):
         self.db_path = db_path or settings.database_path
+        self.wordle_service = WordleService()
 
     def combine_stats(
         self,
@@ -24,6 +26,7 @@ class AnalyticsService:
         discord_stats: DiscordStats,
         guild_name: str = "Chizza Guild",
         total_guild_xp: int = 0,
+        discord_messages: List[DiscordMessage] = None,
     ) -> WrappedSummary:
         """
         Combine Hypixel and Discord statistics into a wrapped summary.
@@ -88,11 +91,30 @@ class AnalyticsService:
         most_pinged = sorted(discord_members, key=lambda x: x.times_pinged, reverse=True)[:10]
         most_pinged = [m for m in most_pinged if m.times_pinged > 0]
 
+        # Get guild veterans (oldest members by join date)
+        # Filter out members with invalid timestamps (0 or None) and sort by timestamp
+        valid_members = [m for m in combined_members if m.joined_timestamp > 0]
+        guild_veterans = sorted(valid_members, key=lambda x: x.joined_timestamp)[:12]
+
         # Calculate aggregate stats
         # Use the guild's total XP if provided, otherwise sum member contributions
         total_xp = total_guild_xp if total_guild_xp > 0 else sum(m.guild_xp for m in combined_members)
         total_members = len(combined_members)
         new_members_count = len(new_members)
+
+        # Calculate Wordle stats
+        wordle_top_winners = []
+        wordle_top_failures = []
+        total_wordle_games = 0
+
+        if discord_messages:
+            wordle_results = self.wordle_service.parse_wordle_results(
+                discord_messages, discord_stats.user_stats
+            )
+            wordle_stats = self.wordle_service.calculate_stats(wordle_results)
+            wordle_top_winners = self.wordle_service.get_top_winners(wordle_stats, limit=5)
+            wordle_top_failures = self.wordle_service.get_top_failures(wordle_stats, limit=5)
+            total_wordle_games = wordle_stats.total_games
 
         # Generate fun facts
         fun_facts = self._generate_fun_facts(
@@ -117,6 +139,10 @@ class AnalyticsService:
             top_messengers=top_msg,
             new_members=new_members,
             most_pinged=most_pinged,
+            guild_veterans=guild_veterans,
+            wordle_top_winners=wordle_top_winners,
+            wordle_top_failures=wordle_top_failures,
+            total_wordle_games=total_wordle_games,
             fun_facts=fun_facts,
         )
 
@@ -312,19 +338,31 @@ class AnalyticsService:
         conn.close()
 
         # Convert to models
-        all_members = [
-            MemberWrappedStats(
-                uuid=m["member_uuid"] or "",
-                username=m["member_name"],
-                guild_xp=m["guild_xp"] or 0,
-                quest_participation=m["quest_participation"] or 0,
-                discord_messages=m["discord_messages"] or 0,
-                times_pinged=m["times_pinged"] or 0,
-                joined_this_year=bool(m["joined_this_year"]),
-                joined_date=m["joined_date"] or "",
+        all_members = []
+        for m in members:
+            # Parse joined_date to timestamp if available
+            joined_timestamp = 0
+            if m["joined_date"]:
+                try:
+                    from datetime import datetime
+                    dt = datetime.strptime(m["joined_date"], "%Y-%m-%d")
+                    joined_timestamp = int(dt.timestamp() * 1000)  # Convert to milliseconds
+                except:
+                    joined_timestamp = 0
+
+            all_members.append(
+                MemberWrappedStats(
+                    uuid=m["member_uuid"] or "",
+                    username=m["member_name"],
+                    guild_xp=m["guild_xp"] or 0,
+                    quest_participation=m["quest_participation"] or 0,
+                    discord_messages=m["discord_messages"] or 0,
+                    times_pinged=m["times_pinged"] or 0,
+                    joined_this_year=bool(m["joined_this_year"]),
+                    joined_timestamp=joined_timestamp,
+                    joined_date=m["joined_date"] or "",
+                )
             )
-            for m in members
-        ]
 
         # Separate into categories
         # Sort by quest participation (top_xp is kept for template compatibility)
@@ -339,6 +377,47 @@ class AnalyticsService:
         most_pinged = sorted(all_members, key=lambda x: x.times_pinged, reverse=True)[:10]
         most_pinged = [m for m in most_pinged if m.times_pinged > 0]
 
+        # Get guild veterans (oldest members by join date)
+        # Filter out members with invalid timestamps (0 or None) and sort by timestamp
+        valid_veteran_members = [m for m in all_members if m.joined_timestamp and m.joined_timestamp > 0]
+        guild_veterans = sorted(valid_veteran_members, key=lambda x: x.joined_timestamp)[:12]
+
+        # Calculate Wordle stats from cached Discord messages
+        wordle_top_winners = []
+        wordle_top_failures = []
+        total_wordle_games = 0
+
+        try:
+            # Load cached Discord messages
+            from app.services.discord_service import DiscordService
+            discord_service = DiscordService()
+            cached_messages = discord_service.load_cached_messages(year)
+
+            if cached_messages:
+                # Calculate user stats for ID mapping
+                from app.models.discord import UserMessageStats
+                user_stats = [
+                    UserMessageStats(
+                        user_id=m.author_id,
+                        username=m.author_name,
+                        message_count=0,
+                        times_pinged=0
+                    )
+                    for m in cached_messages
+                ]
+                # Deduplicate by user_id
+                seen = set()
+                user_stats = [x for x in user_stats if x.user_id not in seen and not seen.add(x.user_id)]
+
+                # Parse and calculate Wordle stats
+                wordle_results = self.wordle_service.parse_wordle_results(cached_messages, user_stats)
+                wordle_stats = self.wordle_service.calculate_stats(wordle_results)
+                wordle_top_winners = self.wordle_service.get_top_winners(wordle_stats, limit=5)
+                wordle_top_failures = self.wordle_service.get_top_failures(wordle_stats, limit=5)
+                total_wordle_games = wordle_stats.total_games
+        except Exception as e:
+            print(f"Warning: Could not load Wordle stats: {e}")
+
         return WrappedSummary(
             year=year,
             total_members=guild_stats["total_members"] if guild_stats else 0,
@@ -350,4 +429,8 @@ class AnalyticsService:
             top_messengers=top_msg,
             new_members=new_members,
             most_pinged=most_pinged,
+            guild_veterans=guild_veterans,
+            wordle_top_winners=wordle_top_winners,
+            wordle_top_failures=wordle_top_failures,
+            total_wordle_games=total_wordle_games,
         )

@@ -113,6 +113,7 @@ async def fetch_all_data():
             # Create empty Discord stats
             from app.models.discord import DiscordStats
             discord_stats = DiscordStats()
+            messages = []
             print("✅ Using empty Discord stats")
             print()
 
@@ -123,7 +124,8 @@ async def fetch_all_data():
             xp_stats,
             discord_stats,
             guild_response.guild.name,
-            guild_response.guild.exp
+            guild_response.guild.exp,
+            messages
         )
 
         analytics_service.save_to_database(summary)

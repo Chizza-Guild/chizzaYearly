@@ -165,18 +165,30 @@ body {
 }
 
 .story-page[data-page="4"] {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
 }
 
 .story-page[data-page="5"] {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    background: linear-gradient(15deg, #2de3db 50%, #cc738f 100%);
 }
 
 .story-page[data-page="6"] {
-    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+    background: linear-gradient(135deg, #fa709a 0%, #fc4a1a 100%);
 }
 
 .story-page[data-page="7"] {
+    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}
+
+.story-page[data-page="8"] {
+    background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+}
+
+.story-page[data-page="9"] {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+
+.story-page[data-page="10"] {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 

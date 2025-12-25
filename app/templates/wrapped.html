@@ -80,9 +80,25 @@
             </div>
         </div>
 
-        <!-- Page 5: Most Pinged (only if Discord data available) -->
-        {% if summary.total_messages > 0 %}
+        <!-- Page 5: Guild Veterancy -->
         <div class="story-page" data-page="5">
+            <div class="story-content">
+                <h2 class="story-heading">Guild Veterancy</h2>
+                <p class="story-subheading">The Original Members</p>
+                <div class="member-grid">
+                    {% for member in summary.guild_veterans[:12] %}
+                    <div class="member-card">
+                        <div class="member-name">{{ member.username }}</div>
+                        <div class="member-joined">Joined {{ member.joined_date }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 6: Most Pinged (only if Discord data available) -->
+        {% if summary.total_messages > 0 %}
+        <div class="story-page" data-page="6">
             <div class="story-content">
                 <h2 class="story-heading">Most Popular</h2>
                 <p class="story-subheading">Most Mentioned Members</p>
@@ -99,8 +115,8 @@
         </div>
         {% endif %}
 
-        <!-- Page 6: Fun Facts -->
-        <div class="story-page" data-page="6">
+        <!-- Page 7: Fun Facts -->
+        <div class="story-page" data-page="7">
             <div class="story-content">
                 <h2 class="story-heading">By The Numbers</h2>
                 <div class="stats-grid">
@@ -129,8 +145,44 @@
             </div>
         </div>
 
-        <!-- Page 7: Thank You -->
-        <div class="story-page" data-page="7">
+        <!-- Page 8: Wordle Winners (only if Wordle data available) -->
+        {% if summary.total_wordle_games > 0 %}
+        <div class="story-page" data-page="8">
+            <div class="story-content">
+                <h2 class="story-heading">Wordle Masters</h2>
+                <p class="story-subheading">Top 5 Winners</p>
+                <div class="leaderboard">
+                    {% for player in summary.wordle_top_winners[:5] %}
+                    <div class="leaderboard-item">
+                        <span class="rank">#{{ loop.index }}</span>
+                        <span class="name">{{ player.username }}</span>
+                        <span class="stat">{{ player.wins }} wins | {{ player.win_rate }}% | Avg: {{ player.average_guesses }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 9: Wordle Failures (only if Wordle data available) -->
+        <div class="story-page" data-page="9">
+            <div class="story-content">
+                <h2 class="story-heading">Wordle Struggles</h2>
+                <p class="story-subheading">Most Failures</p>
+                <div class="leaderboard">
+                    {% for player in summary.wordle_top_failures[:5] %}
+                    <div class="leaderboard-item">
+                        <span class="rank">#{{ loop.index }}</span>
+                        <span class="name">{{ player.username }}</span>
+                        <span class="stat">{{ player.losses }} failures ({{player.total_games }} games)</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Page 10: Thank You -->
+        <div class="story-page" data-page="10">
             <div class="story-content">
                 <h1 class="story-title animate-in">Thank You</h1>
                 <p class="story-text animate-in delay-1">For an amazing {{ year }}</p>
@@ -153,7 +205,15 @@
 <script>
     // Initialize wrapped with total pages
     if (typeof initializeWrapped === 'function') {
-        initializeWrapped(7);
+        // Calculate total pages dynamically based on conditional content
+        let totalPages = 7;  // Base pages: Welcome, Quest Champions, New Members, Guild Veterancy, By The Numbers, Thank You
+        {% if summary.total_messages > 0 %}
+        totalPages += 2;  // Add Chattiest Members and Most Popular
+        {% endif %}
+        {% if summary.total_wordle_games > 0 %}
+        totalPages += 2;  // Add Wordle Masters and Wordle Struggles
+        {% endif %}
+        initializeWrapped(totalPages);
     }
 </script>
 {% endblock %}

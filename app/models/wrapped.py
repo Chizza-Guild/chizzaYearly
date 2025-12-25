@@ -5,6 +5,9 @@ Pydantic models for wrapped statistics.
 from pydantic import BaseModel
 from typing import List, Optional
 
+# Import Wordle models
+from app.models.wordle import WordleUserStats
+
 
 class MemberWrappedStats(BaseModel):
     """Combined statistics for a guild member."""
@@ -38,6 +41,12 @@ class WrappedSummary(BaseModel):
     top_messengers: List[MemberWrappedStats] = []
     new_members: List[MemberWrappedStats] = []
     most_pinged: List[MemberWrappedStats] = []
+    guild_veterans: List[MemberWrappedStats] = []
+
+    # Wordle stats
+    wordle_top_winners: List[WordleUserStats] = []
+    wordle_top_failures: List[WordleUserStats] = []
+    total_wordle_games: int = 0
 
     # Fun facts
     fun_facts: List[str] = []

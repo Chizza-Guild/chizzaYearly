@@ -69,11 +69,12 @@ async def refresh_data(authorized: bool = Depends(verify_password)):
             print("Discord integration disabled, using empty stats...")
             from app.models.discord import DiscordStats
             discord_stats = DiscordStats()
+            messages = []
 
         # Combine and save
         print("Combining statistics...")
         summary = analytics_service.combine_stats(
-            xp_stats, discord_stats, guild_response.guild.name, guild_response.guild.exp
+            xp_stats, discord_stats, guild_response.guild.name, guild_response.guild.exp, messages
         )
 
         print("Saving to database...")

@@ -30,6 +30,7 @@
 
         <!-- Page 2: Quest Champions -->
         <div class="story-page" data-page="2">
+            <div class="data-source-badge">Hypixel</div>
             <div class="story-content">
                 <h2 class="story-heading">Quest Champions</h2>
                 <p class="story-subheading">Most Guild Quests Completed</p>
@@ -48,6 +49,7 @@
         <!-- Page 3: Top Messengers (only if Discord data available) -->
         {% if summary.total_messages > 0 %}
         <div class="story-page" data-page="3">
+            <div class="data-source-badge">Discord</div>
             <div class="story-content">
                 <h2 class="story-heading">Chattiest Members</h2>
                 <p class="story-subheading">Most Messages Sent</p>
@@ -66,6 +68,7 @@
 
         <!-- Page 4: New Members -->
         <div class="story-page" data-page="4">
+            <div class="data-source-badge">Hypixel</div>
             <div class="story-content">
                 <h2 class="story-heading">Fresh Faces</h2>
                 <p class="story-subheading">{{ summary.new_members_count }} members joined in {{ year }}</p>
@@ -82,6 +85,7 @@
 
         <!-- Page 5: Guild Veterancy -->
         <div class="story-page" data-page="5">
+            <div class="data-source-badge">Hypixel</div>
             <div class="story-content">
                 <h2 class="story-heading">Guild Veterancy</h2>
                 <p class="story-subheading">The Original Members</p>
@@ -99,6 +103,7 @@
         <!-- Page 6: Most Pinged (only if Discord data available) -->
         {% if summary.total_messages > 0 %}
         <div class="story-page" data-page="6">
+            <div class="data-source-badge">Discord</div>
             <div class="story-content">
                 <h2 class="story-heading">Most Popular</h2>
                 <p class="story-subheading">Most Mentioned Members</p>
@@ -117,6 +122,7 @@
 
         <!-- Page 7: Fun Facts -->
         <div class="story-page" data-page="7">
+            <div class="data-source-badge">Hypixel & Discord</div>
             <div class="story-content">
                 <h2 class="story-heading">By The Numbers</h2>
                 <div class="stats-grid">
@@ -148,6 +154,7 @@
         <!-- Page 8: Wordle Winners (only if Wordle data available) -->
         {% if summary.total_wordle_games > 0 %}
         <div class="story-page" data-page="8">
+            <div class="data-source-badge">Wordle</div>
             <div class="story-content">
                 <h2 class="story-heading">Wordle Masters</h2>
                 <p class="story-subheading">Top 5 Winners</p>
@@ -165,6 +172,7 @@
 
         <!-- Page 9: Wordle Failures (only if Wordle data available) -->
         <div class="story-page" data-page="9">
+            <div class="data-source-badge">Wordle</div>
             <div class="story-content">
                 <h2 class="story-heading">Wordle Struggles</h2>
                 <p class="story-subheading">Most Failures</p>
@@ -194,6 +202,9 @@
                      {% if custom_page.background_gradient %}
                      style="background: {{ custom_page.background_gradient }};"
                      {% endif %}>
+                    {% if custom_page.data_source %}
+                    <div class="data-source-badge">{{ custom_page.data_source }}</div>
+                    {% endif %}
                     <div class="story-content">
 
                         {% if custom_page.page_type == "leaderboard" %}

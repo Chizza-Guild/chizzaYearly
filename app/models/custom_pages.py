@@ -21,6 +21,7 @@ class LeaderboardPage(BaseModel):
     subtitle: Optional[str] = None
     items: List[LeaderboardItem]
     background_gradient: Optional[str] = None
+    data_source: Optional[str] = None
 
 
 # Grid Page Models
@@ -37,6 +38,7 @@ class GridPage(BaseModel):
     subtitle: Optional[str] = None
     items: List[GridItem]
     background_gradient: Optional[str] = None
+    data_source: Optional[str] = None
 
 
 # Stats Page Models
@@ -54,6 +56,7 @@ class StatsPage(BaseModel):
     stats: List[StatItem]
     fun_fact: Optional[str] = None
     background_gradient: Optional[str] = None
+    data_source: Optional[str] = None
 
 
 # Text Page Models
@@ -64,6 +67,7 @@ class TextPage(BaseModel):
     subtitle: Optional[str] = None
     body: str
     background_gradient: Optional[str] = None
+    data_source: Optional[str] = None
 
 
 # Union type for discriminated union

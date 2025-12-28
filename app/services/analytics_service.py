@@ -4,12 +4,15 @@ Generates wrapped statistics and stores them in the database.
 """
 
 import sqlite3
+import json
+from pathlib import Path
 from typing import List, Dict
 from datetime import datetime
 from app.config import settings
 from app.models.hypixel import MemberXPStats
 from app.models.discord import DiscordStats, UserMessageStats, DiscordMessage
 from app.models.wrapped import MemberWrappedStats, WrappedSummary
+from app.models.custom_pages import CustomPagesConfig, CustomPage
 from app.services.wordle_service import WordleService
 
 
@@ -189,6 +192,38 @@ class AnalyticsService:
             )
 
         return facts
+
+    def _load_custom_pages(self, year: int) -> List[CustomPage]:
+        """
+        Load custom pages from JSON file for the given year.
+
+        Args:
+            year: Year to load custom pages for
+
+        Returns:
+            List of custom pages, or empty list if file not found
+        """
+        json_path = Path(f"data/custom_pages_{year}.json")
+
+        if not json_path.exists():
+            return []
+
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            # Validate with Pydantic
+            config = CustomPagesConfig(**data)
+
+            print(f"✅ Loaded {len(config.custom_pages)} custom page(s) from {json_path}")
+            return config.custom_pages
+
+        except json.JSONDecodeError as e:
+            print(f"⚠️ Warning: Invalid JSON in {json_path}: {e}")
+            return []
+        except Exception as e:
+            print(f"⚠️ Warning: Could not load custom pages from {json_path}: {e}")
+            return []
 
     def save_to_database(self, summary: WrappedSummary):
         """
@@ -418,6 +453,9 @@ class AnalyticsService:
         except Exception as e:
             print(f"Warning: Could not load Wordle stats: {e}")
 
+        # Load custom pages from JSON
+        custom_pages = self._load_custom_pages(year)
+
         return WrappedSummary(
             year=year,
             total_members=guild_stats["total_members"] if guild_stats else 0,
@@ -433,4 +471,5 @@ class AnalyticsService:
             wordle_top_winners=wordle_top_winners,
             wordle_top_failures=wordle_top_failures,
             total_wordle_games=total_wordle_games,
+            custom_pages=custom_pages,
         )

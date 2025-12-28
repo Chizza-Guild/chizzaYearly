@@ -192,6 +192,32 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+/* Default gradients for custom pages */
+.story-page.custom-page:not([style*="background"]):nth-child(11) {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.story-page.custom-page:not([style*="background"]):nth-child(12) {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.story-page.custom-page:not([style*="background"]):nth-child(13) {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
+.story-page.custom-page:not([style*="background"]):nth-child(14) {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.story-page.custom-page:not([style*="background"]):nth-child(15) {
+    background: linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%);
+}
+
+/* Fallback for any additional custom pages */
+.story-page.custom-page:not([style*="background"]) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 /* Story Content */
 .story-content {
     text-align: center;

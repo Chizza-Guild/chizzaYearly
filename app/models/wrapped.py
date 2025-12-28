@@ -3,7 +3,7 @@ Pydantic models for wrapped statistics.
 """
 
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Union, Any
 
 # Import Wordle models
 from app.models.wordle import WordleUserStats
@@ -50,3 +50,6 @@ class WrappedSummary(BaseModel):
 
     # Fun facts
     fun_facts: List[str] = []
+
+    # Custom pages from JSON (using Any to avoid circular import)
+    custom_pages: List[Any] = []

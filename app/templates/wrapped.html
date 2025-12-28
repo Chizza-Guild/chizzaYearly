@@ -181,6 +181,81 @@
         </div>
         {% endif %}
 
+        <!-- Custom Pages from JSON -->
+        {% if summary.custom_pages %}
+            {% set base_pages = 7 %}
+            {% if summary.total_messages > 0 %}{% set base_pages = base_pages + 2 %}{% endif %}
+            {% if summary.total_wordle_games > 0 %}{% set base_pages = base_pages + 2 %}{% endif %}
+
+            {% for custom_page in summary.custom_pages %}
+                {% set page_num = base_pages + loop.index %}
+
+                <div class="story-page custom-page" data-page="{{ page_num }}"
+                     {% if custom_page.background_gradient %}
+                     style="background: {{ custom_page.background_gradient }};"
+                     {% endif %}>
+                    <div class="story-content">
+
+                        {% if custom_page.page_type == "leaderboard" %}
+                            <h2 class="story-heading">{{ custom_page.title }}</h2>
+                            {% if custom_page.subtitle %}
+                            <p class="story-subheading">{{ custom_page.subtitle }}</p>
+                            {% endif %}
+                            <div class="leaderboard">
+                                {% for item in custom_page.items %}
+                                <div class="leaderboard-item">
+                                    <span class="rank">#{{ item.rank }}</span>
+                                    <span class="name">{{ item.name }}</span>
+                                    <span class="stat">{{ item.stat }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                        {% elif custom_page.page_type == "grid" %}
+                            <h2 class="story-heading">{{ custom_page.title }}</h2>
+                            {% if custom_page.subtitle %}
+                            <p class="story-subheading">{{ custom_page.subtitle }}</p>
+                            {% endif %}
+                            <div class="member-grid">
+                                {% for item in custom_page.items %}
+                                <div class="member-card">
+                                    <div class="member-name">{{ item.name }}</div>
+                                    <div class="member-joined">{{ item.detail }}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                        {% elif custom_page.page_type == "stats" %}
+                            <h2 class="story-heading">{{ custom_page.title }}</h2>
+                            {% if custom_page.subtitle %}
+                            <p class="story-subheading">{{ custom_page.subtitle }}</p>
+                            {% endif %}
+                            <div class="stats-grid">
+                                {% for stat in custom_page.stats %}
+                                <div class="stat-card">
+                                    <div class="stat-value count-up" data-target="{{ stat.value }}">0</div>
+                                    <div class="stat-label">{{ stat.label }}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if custom_page.fun_fact %}
+                            <p class="fun-fact">{{ custom_page.fun_fact }}</p>
+                            {% endif %}
+
+                        {% elif custom_page.page_type == "text" %}
+                            <h1 class="story-title animate-in">{{ custom_page.title }}</h1>
+                            {% if custom_page.subtitle %}
+                            <h2 class="story-subtitle animate-in delay-1">{{ custom_page.subtitle }}</h2>
+                            {% endif %}
+                            <p class="story-text animate-in delay-2">{{ custom_page.body }}</p>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <!-- Page 10: Thank You -->
         <div class="story-page" data-page="10">
             <div class="story-content">
@@ -212,6 +287,9 @@
         {% endif %}
         {% if summary.total_wordle_games > 0 %}
         totalPages += 2;  // Add Wordle Masters and Wordle Struggles
+        {% endif %}
+        {% if summary.custom_pages %}
+        totalPages += {{ summary.custom_pages|length }};  // Add custom pages
         {% endif %}
         initializeWrapped(totalPages);
     }

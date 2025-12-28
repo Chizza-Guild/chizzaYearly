@@ -73,7 +73,7 @@
                 <h2 class="story-heading">Fresh Faces</h2>
                 <p class="story-subheading">{{ summary.new_members_count }} members joined in {{ year }}</p>
                 <div class="member-grid">
-                    {% for member in summary.new_members[:9] %}
+                    {% for member in summary.new_members[:12] %}
                     <div class="member-card">
                         <div class="member-name">{{ member.username }}</div>
                         <div class="member-joined">Joined {{ member.joined_date }}</div>

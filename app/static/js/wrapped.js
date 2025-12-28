@@ -18,6 +18,7 @@ function initializeWrapped(pages) {
     updateProgress();
     updateNavButtons();
     startCountUpAnimations();
+    fadeOutNavHint();
 }
 
 /**
@@ -185,6 +186,24 @@ function startCountUpAnimations() {
  */
 function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/**
+ * Fade out the navigation hint after a few seconds
+ */
+function fadeOutNavHint() {
+    const navHint = document.querySelector('.nav-hint');
+    if (!navHint) return;
+
+    // Wait 8 seconds, then add fade-out class (gives users time to read main content first)
+    setTimeout(() => {
+        navHint.classList.add('fade-out');
+
+        // Remove from DOM after fade completes
+        setTimeout(() => {
+            navHint.style.display = 'none';
+        }, 1000);
+    }, 8000);
 }
 
 // Auto-initialize if we're on the wrapped page

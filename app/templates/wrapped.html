@@ -127,8 +127,8 @@
                 <h2 class="story-heading">By The Numbers</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value count-up" data-target="{{ summary.total_members }}">0</div>
-                        <div class="stat-label">Total Members</div>
+                        <div class="stat-value count-up" data-target="{{ summary.new_members_count }}">0</div>
+                        <div class="stat-label">New Members</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value count-up" data-target="{{ summary.total_guild_xp }}">0</div>
@@ -140,10 +140,6 @@
                         <div class="stat-label">Messages Sent</div>
                     </div>
                     {% endif %}
-                    <div class="stat-card">
-                        <div class="stat-value count-up" data-target="{{ summary.new_members_count }}">0</div>
-                        <div class="stat-label">New Members</div>
-                    </div>
                 </div>
                 {% if summary.most_active_day %}
                 <p class="fun-fact">Most active day: {{ summary.most_active_day }}</p>

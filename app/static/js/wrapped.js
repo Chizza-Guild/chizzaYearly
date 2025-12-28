@@ -4,6 +4,17 @@ let currentPage = 1;
 let totalPages = 7;
 let isAnimating = false;
 
+// Animation types for page transitions
+const animationTypes = [
+    'anim-slide-right',
+    'anim-zoom',
+    'anim-slide-left',
+    'anim-flip',
+    'anim-slide-up',
+    'anim-rotate',
+    'anim-slide-down'
+];
+
 /**
  * Initialize the wrapped interface
  * @param {number} pages - Total number of pages
@@ -12,6 +23,7 @@ function initializeWrapped(pages) {
     totalPages = pages;
     currentPage = 1;
 
+    assignAnimationsToPages();
     setupNavigation();
     setupKeyboardControls();
     setupTouchControls();
@@ -19,6 +31,18 @@ function initializeWrapped(pages) {
     updateNavButtons();
     startCountUpAnimations();
     fadeOutNavHint();
+}
+
+/**
+ * Assign different animation classes to each page
+ */
+function assignAnimationsToPages() {
+    const pages = document.querySelectorAll('.story-page');
+    pages.forEach((page, index) => {
+        // Cycle through animation types
+        const animType = animationTypes[index % animationTypes.length];
+        page.classList.add(animType);
+    });
 }
 
 /**
@@ -104,13 +128,25 @@ function goToPage(pageNum) {
     const currentElement = pages[currentPage - 1];
     const nextElement = pages[pageNum - 1];
 
-    // Update classes
+    const goingForward = pageNum > currentPage;
+
+    // Remove active state from current page
     currentElement.classList.remove('active');
-    if (pageNum > currentPage) {
+
+    // Add prev class to show it's leaving
+    if (!currentElement.classList.contains('prev')) {
         currentElement.classList.add('prev');
     }
 
-    nextElement.classList.remove('prev');
+    // Prepare next page - remove prev if going forward, ensure it's in initial state if going back
+    if (goingForward) {
+        nextElement.classList.remove('prev');
+    } else {
+        // Going backwards - next page should slide in from left
+        nextElement.classList.remove('prev');
+    }
+
+    // Activate the next page
     nextElement.classList.add('active');
 
     currentPage = pageNum;

@@ -160,6 +160,15 @@ async def fetch_all_data():
         traceback.print_exc()
         return False
 
+    finally:
+        # Clean up aiohttp sessions to prevent SSL warnings
+        if hasattr(hypixel_service, 'session') and hypixel_service.session:
+            await hypixel_service.session.close()
+        if discord_service and hasattr(discord_service, 'session') and discord_service.session:
+            await discord_service.session.close()
+        # Small delay to allow connections to close gracefully
+        await asyncio.sleep(0.25)
+
 
 def main():
     """Entry point for the script."""

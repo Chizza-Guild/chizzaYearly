@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Union, Any
 
 # Import Wordle models
-from app.models.wordle import WordleUserStats
+# from app.models.wordle import WordleUserStats
 
 
 class MemberWrappedStats(BaseModel):
@@ -43,10 +43,10 @@ class WrappedSummary(BaseModel):
     most_pinged: List[MemberWrappedStats] = []
     guild_veterans: List[MemberWrappedStats] = []
 
-    # Wordle stats
-    wordle_top_winners: List[WordleUserStats] = []
-    wordle_top_failures: List[WordleUserStats] = []
-    total_wordle_games: int = 0
+    # # Wordle stats
+    # wordle_top_winners: List[WordleUserStats] = []
+    # wordle_top_failures: List[WordleUserStats] = []
+    # total_wordle_games: int = 0
 
     # Fun facts
     fun_facts: List[str] = []

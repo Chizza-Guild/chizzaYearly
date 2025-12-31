@@ -143,9 +143,9 @@ class AnalyticsService:
             new_members=new_members,
             most_pinged=most_pinged,
             guild_veterans=guild_veterans,
-            wordle_top_winners=wordle_top_winners,
-            wordle_top_failures=wordle_top_failures,
-            total_wordle_games=total_wordle_games,
+            # wordle_top_winners=wordle_top_winners,
+            # wordle_top_failures=wordle_top_failures,
+            # total_wordle_games=total_wordle_games,
             fun_facts=fun_facts,
         )
 
@@ -468,8 +468,8 @@ class AnalyticsService:
             new_members=new_members,
             most_pinged=most_pinged,
             guild_veterans=guild_veterans,
-            wordle_top_winners=wordle_top_winners,
-            wordle_top_failures=wordle_top_failures,
-            total_wordle_games=total_wordle_games,
+            # wordle_top_winners=wordle_top_winners,
+            # wordle_top_failures=wordle_top_failures,
+            # total_wordle_games=total_wordle_games,
             custom_pages=custom_pages,
         )
